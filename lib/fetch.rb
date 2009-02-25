@@ -3,7 +3,7 @@ require 'uri'
 
 module METAR
 
-    class Fetch
+  class Fetch
 
     def self.station(station_id)
       server = 'weather.noaa.gov'
@@ -17,18 +17,18 @@ module METAR
     rescue SocketError => e
       puts "Could not connect!"
     exit
-  end
+    end
 
     case res
-    when Net::HTTPSuccess
-      data = res.body
-      data.split(/\n/).each do |line|
-        if  line =~ /^#{station_id}/  
-          report = line
-          return report
+      when Net::HTTPSuccess
+        data = res.body
+        data.split(/\n/).each do |line|
+          if  line =~ /^#{station_id}/  
+            report = line
+            return report
+          end
         end
       end
     end
   end
-end
 end
