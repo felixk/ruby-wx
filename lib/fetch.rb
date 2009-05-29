@@ -1,14 +1,14 @@
 require 'net/http'
 require 'uri'
 
-module METAR
+module WX
 
-  class Fetch
+class Fetch
 
-    def self.station(station_id)
-      server = 'weather.noaa.gov'
-      port = '80'
-      path = '/cgi-bin/mgetmetar.pl?cccc=' +station_id
+  def self.metar(station_id)
+    server = 'weather.noaa.gov'
+    port = '80'
+    path = '/cgi-bin/mgetmetar.pl?cccc=' +station_id
 
     begin
       http = Net::HTTP.new(server, port)
@@ -16,7 +16,7 @@ module METAR
       res = http.get(path)
     rescue SocketError => e
       puts "Could not connect!"
-    exit
+      exit
     end
 
     case res
@@ -27,8 +27,35 @@ module METAR
             report = line
             return report
           end
-        end
       end
     end
   end
+  
+  def self.taf(station_id)
+    server = 'weather.noaa.gov'
+    port = '80'
+    path = '/cgi-bin/mgettaf.pl?cccc=' + station_id
+
+    begin
+      http = Net::HTTP.new(server, port)
+      http.read_timeout = 300
+      res = http.get(path)
+    rescue SocketError => e
+      puts "Could not connect!"
+      exit
+    end
+  
+    case res
+      when Net::HTTPSuccess
+        data = res.body.gsub(/\n/, ' ').gsub(/ +/, ' ')
+        if  data =~ /<pre>(.*?)<\/pre>/  
+          report = $1
+          return report
+        end
+    end
+    
+  end
+  
+end
+  
 end

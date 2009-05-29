@@ -4,13 +4,13 @@ require 'lib/groups'
 require 'ruby-units'
 require 'stringio'
 
-module METAR
+module WX
 	  # METAR is short for a bunch of French words meaning "aviation routine
   # weather report". An example METAR code looks like:
   #     KLRU 261453Z AUTO 00000KT 3SM -RA OVC004 02/02 A3008 RMK AO2
   # This is intimidating, to say the least, to nonaviators. This class will
   # parse a METAR code and provide the information in its attribute readers.
-  class Report
+  class MetarReport
     include Groups
     # The raw METAR observation as passed to parse
     attr_accessor :raw
@@ -93,7 +93,7 @@ module METAR
 
     # Parse a raw METAR code and return a METAR object
     def self.parse(raw)
-      m = Report.new
+      m = MetarReport.new
       m.raw = raw
       groups = raw.split
 

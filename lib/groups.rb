@@ -28,7 +28,7 @@ class Unit
   end
 end
 
-module METAR
+module WX
   # METAR codes are subdivided into "groups". The classes in this module do the
   # heavy lifting of parsing, and provide the API to access the relevant
   # information

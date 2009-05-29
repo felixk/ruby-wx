@@ -6,7 +6,8 @@ require 'lib/fetch'
 require 'lib/groups'
 
 ## argument is ICAO-format station code
-raw = METAR::Fetch.station('KSAN')
+raw = WX::Fetch.taf('KTEB')
 
-puts decode = METAR::Report.parse(raw)
+#puts decode = WX::MetarReport.parse(raw)
 
+puts raw
