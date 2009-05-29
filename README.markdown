@@ -1,11 +1,9 @@
-## ruby-metar
+## ruby-wx
 
-This is a fork of Hans Fugal's possibly-not-maintained 'ruby-wx' library
-which parses METAR data into human readable output.
- 
-For clarity, the "WX" module has been renamed to "METAR" and the former "METAR" class becomes "Report".
+This is a fork of brandonh's ruby-metar project. I have renamed it back to ruby-wx as I plan on including TAF decoding support.
 
-I have introduced a "Fetch" class which handles the automatic retrieval of reports from a NOAA source.
+METAR decoding
+TAF decoding
 
 ### example.rb
 
