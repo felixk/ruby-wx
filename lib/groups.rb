@@ -55,6 +55,43 @@ module WX
         return ::Time.utc(y,m,mday,hour,min)
       end
     end
+    
+    class TAFTime < ::Time
+      #convert 3012/3112 to time objects
+      
+      def self.parse(raw)
+        raise ArgumentError unless raw =~ /^(\d\d)(\d\d)\/(\d\d)(\d\d)$/
+        
+        timeArray = Array.new
+        
+        t = ::Time.now.utc
+        
+        y = t.year
+        m = t.month
+        
+        timeStartMonthDay = $1.to_i
+        timeStartHour = $2.to_i
+        timeStartMin = 0
+        
+        if t.mday < timeStartMonthDay
+          m -= 1
+        end
+        if m < 1
+          m = 12
+          y -= 1
+        end
+        
+        timeArray.push(::Time.utc(y, m, timeStartMonthDay, timeStartHour, timeStartMin))
+        
+        timeEndMonthDay = $3.to_i
+        timeEndHour = $4.to_i
+        timeEndMin = 0
+        
+        timeArray.push(::Time.utc(y, m, timeEndMonthDay, timeEndHour, timeEndMin))
+        
+        return timeArray
+      end
+    end
 
     class Wind
       # Angle Unit
@@ -165,19 +202,37 @@ module WX
     # How many statute miles of horizontal visibility. May be reported as less
     # than so many miles, in which case Unit#minus? returns true.
     class Visibility < Unit
-      def initialize(raw)
-        raise ArgumentError unless raw =~ /^(M?)(\d+ )?(\d+)(\/(\d+))?SM$/
-        @minus = true if $1 == 'M'
-        if $4
-          d = $3.to_f / $5.to_f
+      attr_reader :plus, :d
+      
+      def initialize(raw)        
+        if(raw =~ /^P(\d)SM$/)
+          @d = $1
+          @plus = true
+          super("#{d} mi")
+        elsif(raw =~ /^(M?)(\d+ )?(\d+)(\/(\d+))?SM$/)
+          @minus = true if $1 == 'M'
+          if $4
+            @d = $3.to_f / $5.to_f
+          else
+            @d = $3.to_f
+          end
+          if $2
+            @d += $2.to_f
+          end
+          super("#{d} mi")
         else
-          d = $3.to_f
+          raise ArgumentError
         end
-        if $2
-          d += $2.to_f
-        end
-        super("#{d} mi")
       end
+      
+      def to_s
+        if @plus == true
+          "Greater than #{d} miles"
+        else
+          "#{d} mi"
+        end
+      end
+      
     end
 
     # How far down a runway the lights can be seen
