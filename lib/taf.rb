@@ -18,6 +18,7 @@ module WX
     attr_accessor :rvr
     attr_accessor :weather
     attr_accessor :sky
+    attr_accessor :partial
     
     def self.parse(raw)
       m = TafReport.new
@@ -100,8 +101,57 @@ module WX
         g = groups.shift
       end
       
+      begin
+        if g =~ /^FM\d\d\d\d\d\d$/
+          fromGroupRaw = g
+              
+          begin
+            g = groups.shift
+            if(g =~ /^FM\d\d\d\d\d\d$/ || g =~ /^TEMPO$/)
+              groups.unshift(g)
+              break
+            elsif(g == nil)
+              break
+            else
+              fromGroupRaw = fromGroupRaw + " " + g
+            end
+          end while true
+          
+          puts fromGroupRaw
+        elsif g =~ /^TEMPO$/
+          tempoGroupRaw = g
+        
+          begin
+            g = groups.shift
+          
+            if(g =~ /^FM\d\d\d\d\d\d$/ || g =~ /^TEMPO$/)
+              groups.unshift(g)
+              break
+            elsif(g == nil)
+              break
+            else
+              tempoGroupRaw = tempoGroupRaw + " " + g
+            end
+          end while true
+           puts tempoGroupRaw
+        elsif g == nil
+          break
+        end
+        
+        g = groups.shift
+      end while true
+      
       return m
     end
-    
+  end
+  
+  class TAFReportPartial
+    attr_accessor :raw
+    attr_accessor :fromOrTempo
+    attr_accessor :wind
+    attr_accessor :visibility
+    attr_accessor :rvr
+    attr_accessor :weather
+    attr_accessor :sky
   end
 end

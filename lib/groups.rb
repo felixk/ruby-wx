@@ -81,11 +81,21 @@ module WX
           y -= 1
         end
         
+        if(timeStartHour == 24)
+          timeStartHour = 23
+          timeStartMin = 59
+        end
+        
         timeArray.push(::Time.utc(y, m, timeStartMonthDay, timeStartHour, timeStartMin))
         
         timeEndMonthDay = $3.to_i
         timeEndHour = $4.to_i
         timeEndMin = 0
+        
+        if(timeEndHour == 24)
+          timeEndHour = 23
+          timeEndMin = 59
+        end
         
         timeArray.push(::Time.utc(y, m, timeEndMonthDay, timeEndHour, timeEndMin))
         

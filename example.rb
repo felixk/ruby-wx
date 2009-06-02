@@ -13,4 +13,7 @@ puts decode = WX::MetarReport.parse(raw)
 
 raw = WX::Fetch.taf('KTEB')
 
-puts WX::TafReport.parse(raw).sky
+decoded =  WX::TafReport.parse(raw)
+
+puts decoded.sky
+puts decoded.wind
