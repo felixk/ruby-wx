@@ -37,7 +37,7 @@ module WX
       # raw date/time group, e.g. 252018Z
       # creates a ::Time object within the past month
       def self.parse(raw)
-        raise ArgumentError unless raw =~ /^(\d\d)(\d\d)(\d\d)Z$/
+        raise ArgumentError unless (raw =~ /^(\d\d)(\d\d)(\d\d)Z$/ || raw =~ /^(\d\d)(\d\d)(\d\d)$/)
         t = ::Time.now.utc
         y = t.year
         m = t.month
@@ -297,6 +297,38 @@ module WX
         @phenomena.first
       end
       def initialize(raw)
+      @wxNotations = {}
+      @wxNotations["MI"] = "Shallow"
+      @wxNotations["PR"] = "Partial"
+      @wxNotations["BC"] = "Patches"
+      @wxNotations["DR"] = "Low Drifting"
+      @wxNotations["BL"] = "Blowing"
+      @wxNotations["SH"] = "Shower(s)"
+      @wxNotations["TS"] = "Thunderstorm"
+      @wxNotations["FZ"] = "Freezing"
+      @wxNotations["DZ"] = "Drizzle"
+      @wxNotations["RA"] = "Rain"
+      @wxNotations["SN"] = "Snow"
+      @wxNotations["SG"] = "Snow Grains"
+      @wxNotations["IC"] = "Ice Crystals"
+      @wxNotations["PE"] = "Ice Pellets"
+      @wxNotations["GR"] = "Hail"
+      @wxNotations["GS"] = "Small Hail and/or Snow Pellets"
+      @wxNotations["UP"] = "Unknown Precipitation"
+      @wxNotations["BR"] = "Mist"
+      @wxNotations["FG"] = "Fog"
+      @wxNotations["FU"] = "Smoke"
+      @wxNotations["VA"] = "Volcanic Ash"
+      @wxNotations["DU"] = "Widespread Dust"
+      @wxNotations["SA"] = "Sand"
+      @wxNotations["HZ"] = "Haze"
+      @wxNotations["PY"] = "Spray"
+      @wxNotations["PO"] = "Well-Developed Dust/Sand Whirls"
+      @wxNotations["SQ"] = "Squalls"
+      @wxNotations["FC"] = "Funnel Cloud Tornado Waterspout"
+      @wxNotations["SS"] = "Sandstorm/Duststorm"
+
+
         r = /^([-+]|VC)?(MI|PR|BC|DR|BL|SH|TS|FZ)?((DZ|RA|SN|SG|IC|PE|PL|GR|GS|UP)*|(BR|FG|FU|VA|DU|SA|HZ|PY)*|(PO|SQ|FC|SS|DS)*)$/
         raise ArgumentError unless raw =~ r
 
@@ -311,10 +343,10 @@ module WX
           @intensity = :vicinity
         end
 
-        @descriptor = $2
+        @descriptor = @wxNotations[$2] == nil ? $2 : @wxNotations[$2]
 
         @phenomena = []
-        s = $3
+        s = @wxNotations[$3] == nil ? $3 : @wxNotations[$3]
         until s.empty?
           @phenomena.push(s.slice!(0..1))
         end
