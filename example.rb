@@ -7,11 +7,11 @@ require 'lib/groups'
 require 'lib/taf'
 
 ## argument is ICAO-format station code
-#raw = WX::Fetch.metar('KTEB')
+raw = WX::Fetch.metar('KTEB')
 
-#puts decode = WX::MetarReport.parse(raw)
+puts decode = WX::MetarReport.parse(raw)
 
-raw = WX::Fetch.taf('KTEB')
+raw = WX::Fetch.taf('KRUT')
 
 taf =  WX::TafReport.parse(raw)
 puts "Station: #{taf.station}"
@@ -28,3 +28,8 @@ end
 
 puts "Sky: #{taf.sky}"
 puts "Partial Count: #{taf.partial.size.to_s}"
+
+taf.partial.each do |partial|
+  puts "Raw: #{partial.raw}"
+  puts "Decoded: #{partial.fromOrTempo} #{partial.wind} #{partial.visibility} #{partial.rvr} #{partial.weather} #{partial.sky} #{partial.time} #{partial.prob}%"
+end

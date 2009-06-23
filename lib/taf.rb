@@ -110,7 +110,7 @@ module WX
               
           begin
             g = groups.shift
-            if(g =~ /^FM\d\d\d\d\d\d$/ || g =~ /^TEMPO$/)
+            if(g =~ /^FM\d\d\d\d\d\d$/ || g =~ /^TEMPO$/ || g =~ /^PROB\d\d$/)
               groups.unshift(g)
               break
             elsif(g == nil)
@@ -127,7 +127,7 @@ module WX
           begin
             g = groups.shift
           
-            if(g =~ /^FM\d\d\d\d\d\d$/ || g =~ /^TEMPO$/)
+            if(g =~ /^FM\d\d\d\d\d\d$/ || g =~ /^TEMPO$/ || g =~ /^PROB\d\d$/)
               groups.unshift(g)
               break
             elsif(g == nil)
@@ -137,6 +137,20 @@ module WX
             end
           end while true
           m.partial.push(WX::TAFReportPartial.parse(tempoGroupRaw))
+        elsif g =~ /^PROB\d\d$/
+          probgroupRaw = g
+          begin
+            g = groups.shift
+            if(g =~ /^FM\d\d\d\d\d\d$/ || g =~ /^TEMPO$/ || g =~ /^PROB\d\d$/)
+              groups.unshift(g)
+              break
+            elsif(g == nil)
+              break
+            else
+              probgroupRaw = probgroupRaw + " " + g
+            end
+          end while true
+          m.partial.push(WX::TAFReportPartial.parse(probgroupRaw))
         elsif g == nil
           break
         end
@@ -168,10 +182,11 @@ module WX
       g = groups.shift
 
       if g =~ /^FM(\d\d\d\d\d\d)$/
-        fromOrTempo = "FROM"
+        m.fromOrTempo = "FROM"
         m.time = Time.parse($1)
+        g = groups.shift
       elsif(g =~ /^TEMPO$/)
-        fromOrTempo = "TEMPO"
+        m.fromOrTempo = "TEMPO"
         g = groups.shift
         if g =~ /^(\d\d)(\d\d)\/(\d\d)(\d\d)$/
           m.time = []
@@ -181,8 +196,8 @@ module WX
           raise ParseError, "Invalid Date and Time '#{g}'"
         end
       elsif(g =~ /^PROB(\d\d)$/)
-        prob = $1
-        fromOrTempo = "PROB"
+        m.prob = $1
+        m.fromOrTempo = "PROB"
         g = groups.shift
         if g =~ /^(\d\d)(\d\d)\/(\d\d)(\d\d)$/
           m.time = []
