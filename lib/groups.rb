@@ -38,6 +38,7 @@ module WX
       # creates a ::Time object within the past month
       def self.parse(raw)
         raise ArgumentError unless (raw =~ /^(\d\d)(\d\d)(\d\d)Z$/ || raw =~ /^(\d\d)(\d\d)(\d\d)$/)
+
         t = ::Time.now.utc
         y = t.year
         m = t.month
@@ -45,13 +46,17 @@ module WX
         hour = $2.to_i
         min  = $3.to_i
         
-        if t.mday < mday
-          m -= 1
+        if mday < t.mday
+          m += 1
         end
         if m < 1
           m = 12
           y -= 1
+        elsif m > 12
+          m = 1
+          y += 1
         end
+
         return ::Time.utc(y,m,mday,hour,min)
       end
     end
@@ -73,12 +78,15 @@ module WX
         timeStartHour = $2.to_i
         timeStartMin = 0
         
-        if t.mday < timeStartMonthDay
-          m -= 1
+        if timeStartMonthDay < t.mday
+          m += 1
         end
         if m < 1
           m = 12
           y -= 1
+        elsif m > 12
+          m = 1
+          y += 1
         end
         
         if(timeStartHour == 24)
