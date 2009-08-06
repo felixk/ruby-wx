@@ -7,11 +7,11 @@ require 'lib/groups'
 require 'lib/taf'
 
 ## argument is ICAO-format station code
-raw = WX::Fetch.metar('KTEB')
+raw = WX::Fetch.metar(ARGV[0])
 
 puts decode = WX::MetarReport.parse(raw)
 
-raw = WX::Fetch.taf('KRUT')
+raw = WX::Fetch.taf(ARGV[0])
 
 taf =  WX::TafReport.parse(raw)
 puts "Station: #{taf.station}"
